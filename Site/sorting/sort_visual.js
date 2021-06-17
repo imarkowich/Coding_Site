@@ -5,7 +5,7 @@ let size = 50;
 let draw_graph = true;
 
 // speed can be changed with selectors
-let ms = 85;
+let ms = 100;
 
 // color selectors
 let color_scheme;
