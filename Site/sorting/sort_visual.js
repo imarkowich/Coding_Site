@@ -5,7 +5,7 @@ let size = 50;
 let draw_graph = true;
 
 // speed can be changed with selectors
-let ms = 75;
+let ms = 85;
 
 // color selectors
 let color_scheme;
@@ -22,7 +22,7 @@ let color_fill_1 = "#4961E1"; // royal blue
 let color_fill_2 = "#FF4500"; // blood orange
 
 function setup() {
-  createCanvas(1301, 500); //1101
+  createCanvas(1201, 500); //1101
 
   console.log("create array with 'size' random values");
   values = new Array(size);
