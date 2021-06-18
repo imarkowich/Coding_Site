@@ -33,6 +33,11 @@ function setup() {
   // make selectors
   make_sort_method_selector();
   make_color_selectors();
+
+  // choose random color
+  let random_color = int(random(0,9));
+  color_scheme.selected(random_color);
+  color_select_event();
   
   // set buttons begin, end, shuffle
   var startButton = createButton('Begin Sort!');
