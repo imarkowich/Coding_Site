@@ -5,10 +5,11 @@ let size = 50;
 let draw_graph = true;
 
 // speed can be changed with selectors
-let ms = 100;
+let ms = 50;
 
-// color selectors
+// selector
 let color_scheme;
+let sort_method;
 
 // start and end button vars
 let begin_sort = false;
@@ -26,10 +27,8 @@ function setup() {
 
   console.log("create array with 'size' random values");
   values = new Array(size);
-  for (let i = 0; i < values.length; i++) {
+  for (let i = 0; i < values.length; i++)
     values[i] = random(height - 50);
-    console.log(values[i]);
-  }
   
   // make selectors
   make_sort_method_selector();
@@ -53,18 +52,22 @@ function draw() {
     draw_entire_graph();
     draw_graph = false;
   }
-  /*
-  console.log("   is_sorting: " + is_sorting);
-  console.log("   begin_sort: " + begin_sort);
-  console.log("   stop_sort : " + stop_sort); */
+  console.log("is_sorting: " + is_sorting);
+  console.log("sort_method: " + sort_method.value());
   if (begin_sort && !is_sorting) {
     is_sorting = true;
     begin_sort = false;
-    console.log("Bubble Sort Begins");
-    bubble_sort();
+    console.log("SORT");
+    if (sort_method.value() == 0) {
+      console.log("Bubble Sort Begins");
+      bubble_sort();
+    } else if (sort_method.value() == 1) {
+      console.log("Selection Sort Begins");
+      selection_sort();
+    }
     noLoop(); // end
   }
-  console.log("NO LOOP");
+  //console.log("NO LOOP");
   /*
   if (!is_sorting) // if not sorting
     stop_sort = false;
@@ -101,7 +104,14 @@ function set_shuffle() {
   loop();
 }
 
-function make_sort_method_selector();
+function make_sort_method_selector() {
+  // different sorting methods
+  sort_method = createSelect();
+  sort_method.selected("Bubble Sort", 0);
+  sort_method.option("Bubble Sort", 0);
+  sort_method.option("Selection Sort", 1);
+}
+
 function make_color_selectors() {
   // bar & background colors schemes
   color_scheme = createSelect();
@@ -121,7 +131,7 @@ function make_color_selectors() {
 }
 
 function color_select_event() {
-  console.log("color_scheme value: " + color_scheme.value);
+  console.log("color_scheme value: " + color_scheme.value());
   // read color scheme value, assign colors
   if (color_scheme.value() == 0) { // Ocean 
     color_back = "#008"; // dark blue
@@ -234,6 +244,51 @@ async function bubble_sort() {
 }
 
 
+// the sort
+async function selection_sort() {
+  var min_j = height, i, j;
+
+  outerloop: // sort in a rightward motion
+  for (i = 0; i < values.length - 1; i++) {
+    min_j = i;
+    for (j = i + 1; j < values.length; j++) {
+      // check if current j is less than smallest element i
+      if (values[j] < values[min_j]) 
+        min_j = j;  
+    }
+
+    await swap(values, min_j, i);
+
+    // un-highlight prev i value
+    redraw_rect(i - 1, color_fill_1);
+    redraw_rect(prev_j, color_fill_1);
+
+    // check if pause
+    if (stop_sort) {
+      redraw_rect(min_j, color_fill_1);
+      redraw_rect(i, color_fill_1);
+      break outerloop;
+    }
+
+    // highlight j value
+    redraw_rect(i, color_fill_2);
+    redraw_rect(min_j, color_fill_2);
+    var prev_j = min_j;
+
+  }
+
+  // check if stop_sort
+  if (!stop_sort) {
+    // un-highlight values
+    redraw_rect(prev_j, color_fill_1);
+    redraw_rect(i-1, color_fill_1);
+  }
+
+  // reset start val
+  is_sorting = false;
+  stop_sort = false;
+}
+
 function redraw_rect(idx, new_color) { 
   // clear
   strokeWeight(2);
@@ -252,7 +307,7 @@ async function swap(arr, a, b) {
   arr[a] = arr[b];
   arr[b] = temp;
 
-  await sleep(ms).then(() => { console.log("Hello World!"); });
+  await sleep(ms).then(() => { console.log(); });
 }
 
 
@@ -264,3 +319,5 @@ function sleep(ms) {
 // shuffle func must stop running, 
 //because bubbe sort has -i and such and a 
 //small element will get stuck at end
+
+// if sorted, dont sort
