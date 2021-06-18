@@ -15,6 +15,7 @@ let sort_method;
 let begin_sort = false;
 let stop_sort = false;
 let is_sorting = false;
+let is_sorted = false;
 
 // starting colors; can be changed with selectors
 let color_back;
@@ -81,7 +82,7 @@ function draw() {
 
 
 function set_begin_sort() { 
-  if (!is_sorting) {
+  if (!is_sorting && !is_sorted) {
     console.log("BEGIN SORT TRUE");
     begin_sort = true;
     loop();
@@ -92,6 +93,7 @@ function set_stop_sort() {
   if (is_sorting) {
     console.log("STOP SORT TRUE");
     stop_sort = true;
+    is_sorted = false;
     loop();
   } else {console.log("Stop Sort Ignored");}
   
@@ -99,6 +101,7 @@ function set_stop_sort() {
 
 function set_shuffle() {
   set_stop_sort();
+  is_sorted = false;
   console.log("SHUFFLE");
   for (let i = 0; i < values.length; i++)
     values[i] = random(height - 50);
@@ -236,11 +239,13 @@ async function bubble_sort() {
     // un-highlight values
     redraw_rect(prev_j, color_fill_1);
     redraw_rect(prev_j +1, color_fill_1);
+    is_sorted = true;
   }
 
   // reset start val
   is_sorting = false;
   stop_sort = false;
+
 }
 
 
@@ -299,6 +304,7 @@ async function selection_sort() {
     // un-highlight values
     redraw_rect(prev_j, color_fill_1);
     redraw_rect(i-1, color_fill_1);
+    is_sorted = true;
   }
 
   // reset start val
@@ -341,6 +347,7 @@ async function insertion_sort() {
     // unhighlight
     redraw_rect(prev_j+1, color_fill_1);
     redraw_rect(prev_j, color_fill_1);
+    is_sorted = true;
   }
 
   // reset start val
