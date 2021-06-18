@@ -5,7 +5,7 @@ let size = 50;
 let draw_graph = true;
 
 // speed can be changed with selectors
-let ms = 50;
+let ms = 101;
 
 // selector
 let color_scheme;
@@ -17,10 +17,10 @@ let stop_sort = false;
 let is_sorting = false;
 
 // starting colors; can be changed with selectors
-let color_back = "#008"; // dark blue
-let color_stroke = "#33F"; // blue
-let color_fill_1 = "#4961E1"; // royal blue
-let color_fill_2 = "#FF4500"; // blood orange
+let color_back;
+let color_stroke;
+let color_fill_1;
+let color_fill_2;
 
 function setup() {
   createCanvas(1201, 500); //1101
@@ -36,13 +36,13 @@ function setup() {
   
   // set buttons begin, end, shuffle
   var startButton = createButton('Begin Sort!');
-    startButton.mousePressed(set_begin_sort);
+  startButton.mousePressed(set_begin_sort);
 
   var endButton = createButton('Stop');
-    endButton.mousePressed(set_stop_sort);
+  endButton.mousePressed(set_stop_sort);
   
   var shuffleButton = createButton('Shuffle');
-    shuffleButton.mousePressed(set_shuffle);
+  shuffleButton.mousePressed(set_shuffle);
 }
 
 
@@ -64,16 +64,13 @@ function draw() {
     } else if (sort_method.value() == 1) {
       console.log("Selection Sort Begins");
       selection_sort();
+    } else if (sort_method.value() == 2) {
+      console.log("Insertion Sort Begins");
+      insertion_sort();
     }
     noLoop(); // end
   }
-  //console.log("NO LOOP");
-  /*
-  if (!is_sorting) // if not sorting
-    stop_sort = false;
-  else
-    stop_sort = false;
-  */
+
   noLoop(); // end
 }
 
@@ -110,12 +107,12 @@ function make_sort_method_selector() {
   sort_method.selected("Bubble Sort", 0);
   sort_method.option("Bubble Sort", 0);
   sort_method.option("Selection Sort", 1);
+  sort_method.option("Insertion Sort", 2);
 }
 
 function make_color_selectors() {
   // bar & background colors schemes
   color_scheme = createSelect();
-  color_scheme.selected("WireFrame");
   color_scheme.option("Ocean", 0);
   color_scheme.option("Orca", 1);
   color_scheme.option("Wireframe", 2);
@@ -168,24 +165,22 @@ function color_select_event() {
     color_stroke = "#D53B81"; // dark rose
     color_fill_1 = "#FF44CC"; // neon pink
     color_fill_2 = "#FF99DD"; // rose
-  }else if (color_scheme.value() == 7) { // Cotton Candy
+  } else if (color_scheme.value() == 7) { // Cotton Candy
     color_back = "#D9EBFF"; // sweet blue
     color_stroke = "#FFF"; // white
     color_fill_1 = "#FF82A9"; // sweet pink
     color_fill_2 = "#7AAEDB"; // corn
-  }else if (color_scheme.value() == 8) { // Jungle
+  } else if (color_scheme.value() == 8) { // Jungle
     color_back = "#135E62"; // brunswick green
     color_stroke = "#478966"; // deep aquamarine
     color_fill_1 = "#7EC656"; // leaf green
     color_fill_2 = "#6FA160"; // branchy green
-  }else if (color_scheme.value() == 9) { // Olympic
+  } else if (color_scheme.value() == 9) { // Olympic
     color_back = "#D6AF36"; // american gold
     color_stroke = "#A77044"; // metal bronze
     color_fill_1 = "#D7D7D7"; // light silver
     color_fill_2 = "#FEE411"; // bright gold
   }
-
-  // redraw all
   draw_entire_graph();
 }
 
@@ -251,18 +246,35 @@ async function selection_sort() {
   outerloop: // sort in a rightward motion
   for (i = 0; i < values.length - 1; i++) {
     min_j = i;
-    for (j = i + 1; j < values.length; j++) {
-      // check if current j is less than smallest element i
-      if (values[j] < values[min_j]) 
-        min_j = j;  
-    }
+    await sleep(ms).then(() => { console.log(); });
 
-    await swap(values, min_j, i);
-
-    // un-highlight prev i value
+    // un-highlight prev swap values
     redraw_rect(i - 1, color_fill_1);
     redraw_rect(prev_j, color_fill_1);
 
+    // check if pause
+    if (stop_sort) 
+      break;
+
+    redraw_rect(min_j, color_stroke); // highlight potential smallest value
+
+    for (j = i + 1; j < values.length; j++) {
+      // check if current j is less than smallest element i
+      if (values[j] < values[min_j]) {
+        await sleep(ms).then(() => { console.log(); }); 
+        // unhighlight potential smallest value 
+        redraw_rect(min_j, color_fill_1); 
+        // check if pause
+        if (stop_sort) 
+          break outerloop;
+        min_j = j;
+        // highlight potential smallest value
+        redraw_rect(min_j, color_stroke);
+      }
+         
+    }
+
+    await swap(values, min_j, i)
     // check if pause
     if (stop_sort) {
       redraw_rect(min_j, color_fill_1);
@@ -288,6 +300,49 @@ async function selection_sort() {
   is_sorting = false;
   stop_sort = false;
 }
+
+
+// the sort
+async function insertion_sort() {
+  var prev_j, i, j;
+
+  outerloop: // sort in a rightward motion
+  for (i = 1; i < values.length ; i++) {
+    rightmost = values[i];
+    // check all values left of rightmost
+    for (j = i - 1; j >= 0; j--) {
+      if (values[j] > rightmost) {
+        await swap(values, j+1, j);
+        // unhighlight
+        redraw_rect(prev_j+1, color_fill_1);
+        redraw_rect(prev_j, color_fill_1);
+        // check if pause
+      if (stop_sort) {
+        // unhighlight draw
+        redraw_rect(j+1, color_fill_1);
+        redraw_rect(j, color_fill_1);
+        break outerloop;
+      }
+        // highlight
+        redraw_rect(j+1, color_fill_2);
+        redraw_rect(j, color_fill_2);
+        prev_j = j;
+      } else break;
+    }
+  }
+
+  // check if stop_sort
+  if (!stop_sort) {
+    // unhighlight
+    redraw_rect(prev_j+1, color_fill_1);
+    redraw_rect(prev_j, color_fill_1);
+  }
+
+  // reset start val
+  is_sorting = false;
+  stop_sort = false;
+}
+
 
 function redraw_rect(idx, new_color) { 
   // clear
