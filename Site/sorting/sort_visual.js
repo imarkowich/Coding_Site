@@ -1,21 +1,22 @@
+// Ian Markowich
+// Sorting program 
+
+// array of random values
 let values = [];
 
-let size = 75;
-
-let draw_graph = true;
-
 // speed can be changed with selectors
-let ms = 10;
+let ms = 100;
 
 // selector
 let color_scheme;
 let sort_method;
 
-// start and end button vars
+// start and end button related vars
 let begin_sort = false;
 let stop_sort = false;
 let is_sorting = false;
 let is_sorted = false;
+let draw_graph = true;
 
 // starting colors; can be changed with selectors
 let color_back;
@@ -23,9 +24,18 @@ let color_stroke;
 let color_fill_1;
 let color_fill_2;
 
+// canvas related vars
+let size = 75;
+let c_width = 750;
+let c_height = 400;
+let rect_width = c_width / size;
+
 function setup() {
-  createCanvas(1001, 400); //1101
-  //centerCanvas();
+  var s_canvas = createCanvas(c_width, c_height); 
+  s_canvas.parent('canvas_graph');
+  
+  //s_canvas.style.borderColor = "red";
+  strokeWeight(1.25);
   console.log("create array with 'size' random values");
   values = new Array(size);
   for (let i = 0; i < values.length; i++)
@@ -112,6 +122,7 @@ function set_shuffle() {
 function make_sort_method_selector() {
   // different sorting methods
   sort_method = createSelect();
+  //sort_method.position(1000, 50);
   sort_method.selected("Bubble Sort", 0);
   sort_method.option("Bubble Sort", 0);
   sort_method.option("Selection Sort", 1);
@@ -194,12 +205,14 @@ function color_select_event() {
 
 
 function draw_entire_graph() {
+  var element = document.getElementById('canvas_graph');
+    element.style.borderColor = color_stroke;
+    strokeWeight(1.25);
   background(color_back);
   for (let n = 0; n < values.length; n++) { 
-    strokeWeight(2);
     fill(color_fill_1);
     stroke(color_stroke);
-    rect(13*n + 5, height, 10, -values[n]);
+    rect(rect_width*n + 1.4, height, rect_width - 2.8, -values[n]);
   }
 }
 
@@ -361,11 +374,12 @@ function redraw_rect(idx, new_color) {
   strokeWeight(2);
   fill(color_back);
   stroke(color_back);
-  rect(13*idx + 5, height, 10, -height);
+  rect(rect_width*idx + 1.4, height, rect_width - 2.7, -height);
   // new color
+  strokeWeight(1.25);
   fill(new_color);
   stroke(color_stroke);
-  rect(13*idx + 5, height, 10, -values[idx]);
+  rect(rect_width*idx + 1.4, height, rect_width - 2.8, -values[idx]);
 }
 
 
@@ -382,9 +396,4 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// stop function
-// shuffle func must stop running, 
-//because bubbe sort has -i and such and a 
-//small element will get stuck at end
-
-// if sorted, dont sort
+// fix color not going away
