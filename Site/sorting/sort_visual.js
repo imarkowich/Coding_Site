@@ -1,11 +1,11 @@
 let values = [];
 
-let size = 50;
+let size = 75;
 
 let draw_graph = true;
 
 // speed can be changed with selectors
-let ms = 101;
+let ms = 10;
 
 // selector
 let color_scheme;
@@ -24,12 +24,12 @@ let color_fill_1;
 let color_fill_2;
 
 function setup() {
-  createCanvas(1201, 500); //1101
-
+  createCanvas(1001, 400); //1101
+  //centerCanvas();
   console.log("create array with 'size' random values");
   values = new Array(size);
   for (let i = 0; i < values.length; i++)
-    values[i] = random(height - 50);
+    values[i] = random(height - 30);
   
   // make selectors
   make_sort_method_selector();
