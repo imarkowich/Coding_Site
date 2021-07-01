@@ -5,7 +5,7 @@
 let values = [];
 
 // speed can be changed with selectors
-let ms = 100;
+let ms = 30;
 
 // selector
 let color_scheme;
@@ -25,7 +25,7 @@ let color_fill_1;
 let color_fill_2;
 
 // canvas related vars
-let size = 75;
+let size = 50;
 let c_width = 750;
 let c_height = 400;
 let rect_width = c_width / size;
@@ -46,7 +46,7 @@ function setup() {
   make_color_selectors();
 
   // choose random color
-  let random_color = int(random(0,9));
+  let random_color = int(random(0,10));
   color_scheme.selected(random_color);
   color_select_event();
   
@@ -83,6 +83,13 @@ function draw() {
     } else if (sort_method.value() == 2) {
       console.log("Insertion Sort Begins");
       insertion_sort();
+    //} else if (sort_method.value() == 3) {
+      //console.log("Merge Sort Begins");
+      //console.log(merge_sort(values));
+      //call_merge_sort();
+      //console.log("AFTER MERGE");
+      //values = merge_sort(values);
+      //draw_entire_graph();
     }
     noLoop(); // end
   }
@@ -127,6 +134,9 @@ function make_sort_method_selector() {
   sort_method.option("Bubble Sort", 0);
   sort_method.option("Selection Sort", 1);
   sort_method.option("Insertion Sort", 2);
+  //sort_method.option("Merge Sort", 3);
+  //sort_method.option("Quick Sort", 4);
+  // sort_method.changed("Insertion Sort", 2);
 }
 
 function make_color_selectors() {
@@ -213,6 +223,19 @@ function draw_entire_graph() {
     fill(color_fill_1);
     stroke(color_stroke);
     rect(rect_width*n + 1.4, height, rect_width - 2.8, -values[n]);
+  }
+}
+
+function draw_entire_graph2(array) {
+  console.log("Draw2");
+  var element = document.getElementById('canvas_graph');
+    element.style.borderColor = color_stroke;
+    strokeWeight(1.25);
+  background(color_back);
+  for (let n = 0; n < array.length; n++) { 
+    fill(color_fill_1);
+    stroke(color_stroke);
+    rect(rect_width*n + 1.4, height, rect_width - 2.8, -array[n]);
   }
 }
 
@@ -369,6 +392,58 @@ async function insertion_sort() {
 }
 
 
+function call_merge_sort() {
+  //values = merge_sort(values);
+  // reset start val
+  console.log("STOP MERGE")
+  is_sorting = false;
+  stop_sort = false;
+}
+
+
+/*
+async function merge(left, right) {
+  let arr = [];
+  // Break out of loop if any one of the array gets empty
+  while (left.length && right.length) {
+      // Pick the smaller among the smallest element of left and right sub arrays 
+      if (left[0] < right[0]) {
+          arr.push(left.shift());
+          
+      } else {
+          arr.push(right.shift()); 
+      }
+  }
+  // draw here maybe??
+  console.log("YA");
+  //draw_entire_graph2(arr);
+  //await sleep(1000).then(() => { console.log("MEOW"); });
+  
+  // Concatenating the leftover elements
+  // (in case we didn't go through the entire left or right array)
+  return [ ...arr, ...left, ...right ];
+}
+
+ async function merge_sort(array) {
+  const half = array.length / 2
+  
+  //draw_entire_graph2(array);
+
+  // Base case or terminating case
+  if(array.length < 2){
+    return array;
+  }
+  const left_array = [];
+  for (let i = 0; i < half; i ++) {
+    left_array.push(array[i]);
+  }
+  //let left_array = array.splice(0, half);
+  //console.log(left_array);
+  //await sleep(ms).then(() => { console.log("DRAW"); });
+  //await sleep(ms).then(() => { console.log(); });
+  return merge(merge_sort(left_array),merge_sort(array));
+}
+*/
 function redraw_rect(idx, new_color) { 
   // clear
   strokeWeight(2);
@@ -380,6 +455,19 @@ function redraw_rect(idx, new_color) {
   fill(new_color);
   stroke(color_stroke);
   rect(rect_width*idx + 1.4, height, rect_width - 2.8, -values[idx]);
+}
+
+function redraw_rect_2(array, idx, new_color) { 
+  // clear
+  strokeWeight(2);
+  fill(color_back);
+  stroke(color_back);
+  rect(rect_width*idx + 1.4, height, rect_width - 2.7, -height);
+  // new color
+  strokeWeight(1.25);
+  fill(new_color);
+  stroke(color_stroke);
+  rect(rect_width*idx + 1.4, height, rect_width - 2.8, -array[idx]);
 }
 
 
